@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Earth Color Finder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <style>
+    #map { height: 80vh; width: 100%; }
+    #color-box {
+      width: 100px; height: 100px; border: 1px solid #000; margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Earth Color Finder 🌍</h2>
+  <p>Click a point on the map to see the median color (Sentinel-2)</p>
+  <div id="map"></div>
+  <div>
+    <p id="info">Click a location...</p>
+    <div id="color-box"></div>
+  </div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const backendURL = "https://YOUR-BACKEND-URL"; // Replace with deployed backend
+    const map = L.map('map').setView([20, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    map.on('click', async function(e) {
+      const {lat, lng} = e.latlng;
+      document.getElementById('info').innerText = `Fetching color for ${lat.toFixed(4)}, ${lng.toFixed(4)}...`;
+      
+      const response = await fetch(`${backendURL}/color?lat=${lat}&lon=${lng}&year=2024`);
+      const data = await response.json();
+
+      if (data.error) {
+        document.getElementById('info').innerText = data.error;
+        return;
+      }
+
+      document.getElementById('info').innerText = `RGB: ${data.rgb}, HEX: ${data.hex}`;
+      document.getElementById('color-box').style.backgroundColor = data.hex;
+    });
+  </script>
+</body>
+</html>

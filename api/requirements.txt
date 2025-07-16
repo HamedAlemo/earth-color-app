@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+planetary-computer
+pystac-client
+stackstac
+xarray
+numpy
+dask
+rioxarray
